@@ -2,4 +2,6 @@ import os
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-import file_util
+import fileUtil
+
+import histUtil

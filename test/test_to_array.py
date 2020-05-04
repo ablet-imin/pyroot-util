@@ -1,7 +1,7 @@
 import ROOT
 import numpy as np
-
-from dump_to_array import to_array
+from context import histUtil
+from histUtil.dump_to_array import to_array
 hist1 = None
 f = ROOT.TFile.Open("~/cernbox/sys_hists_BStar_1000_smoothed.root")
 hist1 = f.Get("OneTagBOneProbeB/JET_JER_EffectiveNP_7restTerm__1up")
