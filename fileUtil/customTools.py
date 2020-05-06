@@ -11,7 +11,9 @@ def open_root(filename, opt='UPDATE'):
         import ROOT
     f = ROOT.TFile.Open(filename, opt)
     try:
-        yield f
+        #yield f
+        ROOT.SetOwnership(f, True)
+        return f
     finally:
         f.Close()
 
