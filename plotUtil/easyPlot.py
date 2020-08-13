@@ -44,7 +44,7 @@ class histplot():
             if label:
                 self.labels.AddEntry(_h, label[i],legend_option)
             
-        self.canv.Update()
+        self.canv.Modified()
         
         return self.canv
     
@@ -65,30 +65,41 @@ class histplot():
             self.canv.SetLogz(1)
             
      #create stack hists
-    def gst(self, hist=[], color=[]):
+    def gst(self, hist=[], label=[], color=[]):
         if len(hist)<2:
-            return
-        for i in range(len(hist)-1):
-            hist[i].SetFillColor(color[i])
-            for _h in hist[i+1:]:
-                hist[i].Add(_h)
+            return hist
+        zipped_lists = zip(hist,  label, color)
+        sorted_pairs = sorted(zipped_lists, key=lambda x: x[0].Integral(), reverse=True)
+
+        tuples = zip(*sorted_pairs)
+        _hist_sorted, _label_sorted, _color_sorted = [ list(tuple) for tuple in  tuples]
+        
+        for i in range(len(_hist_sorted)-1):
+            _hist_sorted[i].SetFillColor(_color_sorted[i])
+            for _h in _hist_sorted[i+1:]:
+                _hist_sorted[i].Add(_h)
         #fill out last one
-        hist[len(hist)-1].SetFillColor(color[len(hist)-1])
-        return hist
+        _hist_sorted[len(_hist_sorted)-1].SetFillColor(_color_sorted[len(_hist_sorted)-1])
+        _hist_sorted[0].SetMinimum(1.0)
+        _hist_sorted[0].SetMaximum(10e8)
+        return _hist_sorted, _label_sorted, _color_sorted
     
-    def stack(self, hist, label=None, option='same hist', color=None, legend_option='f'):
-        if not isinstance(hist,list):
+    
+    def stack(self, hists, label=[], option="hist same", color=None, legend_option='f'):
+        if not isinstance(hists,list):
             hist = [hist]
         if label and not isinstance(label,list) :
             label = [label]
         if color and not isinstance(color,list) :
             color = [color]
+        
             
         #we get reverse orderded hist
-        hist = self.gst(hist[::], color[::])
-        self.plot( hist[-1:])
-        self.plot( hist=hist, label=label, option=option, legend_option=legend_option)
+        _hs, _ls, _cs  = self.gst(hists, label, color)
+        #self.plot( _hists[-1:])
+        #if len(color)<1:  ROOT.gStyle.SetPalette(ROOT.kOcean)
+        self.plot( hist=_hs, label=_ls, option=option, legend_option=legend_option)
         
-        self.canv.Update()
+        self.canv.Modified()
         
         return self.canv
